@@ -1,116 +1,177 @@
-import turtle
+# Example file showing a circle moving on screen
+import pygame
+import sys
+import os
+import time
 import random
-import math
+# pygame setup
+pygame.init()
+pygame.font.init()
 
-screen = turtle.Screen()
-screen.title("Little")
-screen.bgcolor("black")
-screen.setup(width=600, height=600)
-turtle.speed(5)
-turtle.pensize(5)
+screen = pygame.display.set_mode((1280, 720))
 
-turtle.penup()
-turtle.goto(-0 , 0)
-turtle.pendown()
-turtle.color("red")
-turtle.forward(600)
-turtle.left(90)
-turtle.forward(600)
-turtle.left(90)
-turtle.forward(600)
-turtle.left(90)
-turtle.penup()
-score = 0
+Redscore = 0
+Redscore_increment = 10
 
-class Line(turtle.Turtle):
- 
-    def __init__(self):
-        turtle.Turtle.__init__(self)
-        self.penup()
-        self.hideturtle()
-        self.speed(0)
-        self.color('red')
-        self.pensize(5)
- 
-        
-# Making the user 'bubble'
-bubble = turtle.Turtle()
-bubble.color("red")
-bubble.shape("circle")
-bubble.penup()
-speed = 3
+BlueScore = 0
+BlueScore_increment = 10
 
-# Making the collection balls
-collection_ball = turtle.Turtle()
-collection_ball.color("red")
-collection_ball.penup()
-collection_ball.shape("circle")
-collection_ball.shapesize(0.5, 0.5, 0.5)
-ball_cor1 = random.randint(30, 280)
-ball_cor2 = random.randint(30, 280)
-collection_ball.setposition(ball_cor1, ball_cor2)
-collection_ball.color("yellow")
+massToScoreRATIO = 0.2
 
-# Scoring
-points = turtle.Turtle()
-points.color("yellow")
-style = ('Courier', 30, 'italic')
-points.penup()
-points.goto(-200, 250)
-points.write("Points: 0", font=style)
-points.hideturtle()
+font = pygame.font.Font(None,32)
 
-# Turning
-def turn_left():
-    bubble.left(90)
+redMase = 20
+blueMase = 20
 
 
-def turn_right():
-    bubble.right(90)
+clock = pygame.time.Clock()
+running = True
+dt = 0
+
+player2 = pygame.Rect(blueMase,blueMase,blueMase,blueMase)
+player1= pygame.Rect(redMase,redMase,redMase,redMase)
+prise = pygame.Rect(10,10,10,10)
 
 
-# Collection of the balls
-def collection(a, b):
-    return abs(a.xcor() - b.xcor()) < 10 and abs(a.ycor() - b.ycor()) < 20
+priseX = random.randrange(10,1200)
+priseY = random.randrange(10,710)
+prise_pos=pygame.Vector2(priseX,priseY)
 
 
-def collection_ball_restart():
-    collection_ball.color("black")
-    ball_cor1 = random.randint(30, 280)
-    ball_cor2 = random.randint(30, 280)
-    collection_ball.goto(ball_cor1, ball_cor2)
-    collection_ball.color("yellow")
-    bubble.forward(speed)
-    screen.ontimer(play_game, 10)
-def isCollision2(t1, t2):
-        if abs (t1.xcor () - t2.xcor ()) < 20 :
-            a = t1.ycor ()
-            b = t2.ycor ()
-            if a < b and a > b - 400 :
-                return True
-        else:
-            return False
+player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+player2_pos = pygame.Vector2(screen.get_width()/2+156,screen.get_height()/2+123)
 
-def play_game():
-    if collection(bubble, collection_ball):
-        global score
-        score += 2
-        points.clear()
-        points.write("Points: " + str(score), font=style)
-        collection_ball_restart()
-        bubble.forward(speed)
-    if isCollision2(line,bubble):
-        bubble.setheading(0)
 
+def collisions():
+    if redMase > blueMase:
+        score_text = font.render(f'Red win with a score of : {Redscore}',True,(255,255,255))
+        screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2))
     else:
-        bubble.forward(speed)
-        screen.ontimer(play_game, 10)
+        score_text = font.render(f'Blue win with a score of : {BlueScore}',True,(255,255,255))
+        screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2))  
+    time.sleep(4)   
+    
+    
+def collections1():
+    global Redscore
+    global redMase
+    Redscore = Redscore + Redscore_increment
+    redMase = redMase + Redscore_increment*massToScoreRATIO
+    
+    
+def collections2():
+    global BlueScore
+    global blueMase
+    blueMase = blueMase + BlueScore_increment
+    BlueScore = BlueScore + BlueScore_increment*massToScoreRATIO
+    
+def ReplacePris():
+    global prise_pos
+    global priseX
+    global priseY
+    priseX = random.randrange(10,1200)
+    priseY = random.randrange(10,710)
+    prise_pos= pygame.Vector2(priseX,priseY)
+    pygame.draw.circle(screen,"yellow",prise_pos,10)
 
+while running:
+    # poll for events
+    # pygame.QUIT event means the user clicked X to close your window
 
-turtle.onkeypress(turn_left, "Left")
-turtle.onkeypress(turn_right, "Right")
+    pygame.draw.circle(screen,"yellow",prise_pos,10)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            running = False
 
+    # fill the screen with a color to wipe away anything from last frame
+    screen.fill("black")
+    
+    player2 = pygame.Rect(blueMase,blueMase,blueMase,blueMase)
+    player1= pygame.Rect(redMase,redMase,redMase,redMase)
+    prise = pygame.Rect(10,10,10,10)
 
-play_game()
+    pygame.draw.circle(screen,"yellow",prise_pos,10)
+    
+    
+    # if pygame.Rect.collidepoint(player1,prise):
+    #     collections1()
+    # elif pygame.Rect.collidepoint(player2,prise):
+    #     collections2()
+    
+    if redMase > blueMase:
+        pygame.draw.circle(screen,"blue",player2_pos,blueMase)
+        pygame.draw.circle(screen, "red", player_pos, redMase)
+    elif blueMase > redMase:    
+        pygame.draw.circle(screen, "red", player_pos, redMase)
+        pygame.draw.circle(screen,"blue",player2_pos,blueMase)
+    else:
+        pygame.draw.circle(screen, "red", player_pos, redMase)
+        pygame.draw.circle(screen,"blue",player2_pos,blueMase)
+        
+        
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_UP]:
+        player_pos.y -= 300 * dt
+    if keys[pygame.K_DOWN]:
+        player_pos.y += 300 * dt
+    if keys[pygame.K_LEFT]:
+        player_pos.x -= 300 * dt
+    if keys[pygame.K_RIGHT]:
+        player_pos.x += 300 * dt
+        
+        
+    
+    if keys[pygame.K_w]:
+        player2_pos.y -= 300 * dt
+    if keys[pygame.K_s]:
+        player2_pos.y += 300 * dt
+    if keys[pygame.K_a]:
+        player2_pos.x -= 300 * dt
+    if keys[pygame.K_d]:
+        player2_pos.x += 300 * dt
+    
+    if player_pos.x > 1280:
+        running = False
+    if player_pos.x < -1280:
+        running = False
+    if player_pos.y > 720:
+        running = False
+    if player_pos.x < 0:
+        running = False
+    if player_pos.y <0:
+        running = False
+        
+    if player2_pos.x > 1280:
+        running = False
+    if player2_pos.x < -1280:
+        running = False
+    if player2_pos.y > 720:
+        running = False
+    if player2_pos.x < 0:
+        running = False
+    if player2_pos.y <0:
+        running = False
+        
+    if prise_pos.x is player_pos.x+redMase/2 and player_pos.y is prise_pos.y:
+        collections1()
+    if prise_pos.x is player2_pos.x+redMase/2 and player2_pos.y is prise_pos.y:
+        collections2()
+        
+    score_text = font.render(f'Score red: {Redscore}',True,(255,255,255))
+    screen.blit(score_text, (10, 10))
+    
+    score_text = font.render(f'Score blue: {BlueScore}',True,(255,255,255))
+    screen.blit(score_text, (600, 10))
 
-screen.mainloop()
+    # flip() the display to put your work on screen
+    player2 = pygame.Rect(blueMase,blueMase,blueMase,blueMase)
+    player1= pygame.Rect(redMase,redMase,redMase,redMase)
+
+    pygame.display.flip()
+
+    # limits FPS to 60
+    # dt is delta time in seconds since last frame, used for framerate-
+    # independent physics.
+    dt = clock.tick(60) / 1000
+pygame.quit()

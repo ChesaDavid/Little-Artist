@@ -50,7 +50,8 @@ def collisions():
         score_text = font.render(f'Blue win with a score of : {BlueScore}',True,(255,255,255))
         screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2))  
     time.sleep(4)   
-    
+    global running
+    running = False
     
 def collections1():
     global Redscore
@@ -73,6 +74,20 @@ def ReplacePris():
     priseY = random.randrange(10,710)
     prise_pos= pygame.Vector2(priseX,priseY)
     pygame.draw.circle(screen,"yellow",prise_pos,10)
+
+def GameOver():
+    menuScreen = True
+    while menuScreen:
+        screen.fill("red")
+        quitButton_pos = pygame.Vector2(screen.get_width()/2 - 300,screen.get_height()/2)
+        quitButton = pygame.Rect(100,100,100,100)
+        pygame.draw.rect(screen,"black",quitButton_pos,quitButton)
+        widthQuitButton = screen.get_width()/2 - 300
+        mouse = pygame.mouse.get_pos()
+        heightQuitButton = screen.get_height()/2
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if widthQuitButton-100 <= mouse[0] <= widthQuitButton+100 and heightQuitButton+100 <= mouse[1] <= heightQuitButton+100: 
+                pygame.quit()
 
 while running:
     # poll for events
@@ -174,4 +189,6 @@ while running:
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
     dt = clock.tick(60) / 1000
+GameOver()
+time.sleep(10)
 pygame.quit()

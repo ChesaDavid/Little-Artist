@@ -66,7 +66,7 @@ def collections2():
     blueMase = blueMase + BlueScore_increment
     BlueScore = BlueScore + BlueScore_increment*massToScoreRATIO
     
-def ReplacePris():
+def ReplacePries():
     global prise_pos
     global priseX
     global priseY
@@ -102,8 +102,8 @@ while running:
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
     
-    player2 = pygame.Rect(blueMase,blueMase,blueMase,blueMase)
-    player1= pygame.Rect(redMase,redMase,redMase,redMase)
+    player2 = pygame.Rect(player2_pos.x,player2_pos.y,blueMase,blueMase)
+    player1= pygame.Rect(player_pos.x-redMase,player_pos.y,redMase,redMase)
     prise = pygame.Rect(10,10,10,10)
 
     pygame.draw.circle(screen,"yellow",prise_pos,10)
@@ -168,10 +168,12 @@ while running:
     if player2_pos.y <0:
         running = False
         
-    if prise_pos.x is player_pos.x+redMase/2 and player_pos.y is prise_pos.y:
+    if prise.collidepoint(player1):
         collections1()
-    if prise_pos.x is player2_pos.x+redMase/2 and player2_pos.y is prise_pos.y:
+        ReplacePries()
+    elif prise.collidepoint(player2):
         collections2()
+        ReplacePries()
         
     score_text = font.render(f'Score red: {Redscore}',True,(255,255,255))
     screen.blit(score_text, (10, 10))

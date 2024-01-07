@@ -45,18 +45,27 @@ player1Y = screen.get_height()/2
 player2X = screen.get_width()/2+156
 player2Y = screen.get_width()/2 +123
 rects = [player1,player2,prise]
+def RedWins():
+    global Redscore
+    score_text = font.render(f'Red win with a score of : {Redscore}',True,(255,255,255))    
+    screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2))
+    GameOver()
+
+def BlueWins():
+    score_text = font.render(f'Blue win with a score of : {BlueScore}',True,(255,255,255))
+    screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2))
+    GameOver()
+    
 def collisions():
     global running
     if redMase > blueMase:
         score_text = font.render(f'Red win with a score of : {Redscore}',True,(255,255,255))    
         screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2))
-        time.sleep(4)   
         running = False
     
     elif blueMase > redMase:
         score_text = font.render(f'Blue win with a score of : {BlueScore}',True,(255,255,255))
         screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2))  
-        time.sleep(4)   
         running = False
     
 def collections1():
@@ -69,8 +78,8 @@ def collections1():
 def collections2():
     global BlueScore
     global blueMase
-    blueMase = blueMase + BlueScore_increment
-    BlueScore = BlueScore + BlueScore_increment*massToScoreRATIO
+    blueMase = blueMase + BlueScore_increment*massToScoreRATIO
+    BlueScore = BlueScore + BlueScore_increment
     
 def ReplacePries():
     global prise_pos
@@ -82,20 +91,25 @@ def ReplacePries():
     pygame.draw.circle(screen,"yellow",prise_pos,10)
 
 def GameOver():
-    menuScreen = True
-    while menuScreen:
+    global keys
+    global running
+    global status
+    time.sleep(4)
+    while True:
         screen.fill("red")
-        quitButton_pos = pygame.Vector2(screen.get_width()/2 - 300,screen.get_height()/2)
-        quitButton = pygame.Rect(100,100,100,100)
-        pygame.draw.rect(screen,"black",quitButton_pos,quitButton)
-        widthQuitButton = screen.get_width()/2 - 300
-        mouse = pygame.mouse.get_pos()
-        heightQuitButton = screen.get_height()/2
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if widthQuitButton-100 <= mouse[0] <= widthQuitButton+100 and heightQuitButton+100 <= mouse[1] <= heightQuitButton+100: 
-                pygame.quit()
+        score_text = font.render(f'Press Q to exit game',True,(255,255,255))
+        screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2)-100)
+        score_text1 = font.render(f'Press R to restart game',True,"white")
+        screen.blit(score_text1,(screen.get_width() / 2, screen.get_height() / 2)+100)
+        if keys[pygame.K_q]:
+            running = False
+            status = False
+        if keys[pygame.K_r]:
+            running = True
+            status = False
+            break
 
-test = 0
+status = True
 def UpdatePositions():
     global prise
     global player1
@@ -106,12 +120,13 @@ def UpdatePositions():
     prise.update(prise_pos.x,prise_pos.y,10,10)
     
     if player1.collidepoint(prise_pos.x,prise_pos.y):
+        ReplacePries()
         collections1()
-        ReplacePries()
     if player2.collidepoint(prise_pos.x,prise_pos.y):
-        collections2()
         ReplacePries()
+        collections2()
     if player1.collidepoint(player2_pos.x,player2_pos.y):
+        ReplacePries()
         collisions()
     
     
@@ -193,26 +208,36 @@ while running:
         UpdatePositions()
     
     if player_pos.x > 1280:
+        BlueWins()
         running = False
     if player_pos.x < -1280:
+        BlueWins()
         running = False
     if player_pos.y > 720:
+        BlueWins()
         running = False
     if player_pos.x < 0:
+        BlueWins()
         running = False
     if player_pos.y <0:
+        BlueWins()
         running = False
         
     if player2_pos.x > 1280:
+        RedWins()
         running = False
     if player2_pos.x < -1280:
+        RedWins()
         running = False
     if player2_pos.y > 720:
+        RedWins()
         running = False
     if player2_pos.x < 0:
+        RedWins()
         running = False
     if player2_pos.y <0:
-        running = False
+        RedWins()
+        
         
 
     score_text = font.render(f'Score red: {Redscore}',True,(255,255,255))
@@ -233,6 +258,9 @@ while running:
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
     dt = clock.tick(60) / 1000
+        
+time.sleep(10)
 GameOver()
 time.sleep(10)
-pygame.quit()
+if running == False:
+    pygame.quit()

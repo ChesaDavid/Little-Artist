@@ -43,15 +43,18 @@ player2_pos = pygame.Vector2(screen.get_width()/2+156,screen.get_height()/2+123)
 
 
 def collisions():
+    global running
     if redMase > blueMase:
-        score_text = font.render(f'Red win with a score of : {Redscore}',True,(255,255,255))
+        score_text = font.render(f'Red win with a score of : {Redscore}',True,(255,255,255))    
         screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2))
-    else:
+        time.sleep(4)   
+        running = False
+    
+    elif blueMase > redMase:
         score_text = font.render(f'Blue win with a score of : {BlueScore}',True,(255,255,255))
         screen.blit(score_text, (screen.get_width() / 2, screen.get_height() / 2))  
-    time.sleep(4)   
-    global running
-    running = False
+        time.sleep(4)   
+        running = False
     
 def collections1():
     global Redscore
@@ -89,11 +92,55 @@ def GameOver():
             if widthQuitButton-100 <= mouse[0] <= widthQuitButton+100 and heightQuitButton+100 <= mouse[1] <= heightQuitButton+100: 
                 pygame.quit()
 
+test = 0
+def UpdatePositions():
+    global player1
+    global player2
+    global player_pos
+    global player2_pos
+    global prise_pos
+    global prise
+    
+    width1 = player_pos.x-redMase/2
+    width2 = player2_pos.x-blueMase/2
+    heaight1 = player_pos.y+redMase/2
+    heaight2 = player2_pos.y+blueMase/2
+    widthPrise = prise_pos.x+5
+    heaightPrise = prise_pos.y+5
+    
+    player2 = pygame.Rect(width1,heaight1,blueMase,blueMase)
+    player1= pygame.Rect(width2,heaight2,redMase,redMase)
+    prise = pygame.Rect(widthPrise,heaightPrise,10,10)
+    
+    width1col = int(width1)
+    width2col = int(width2)
+    heaight1col = int(heaight1)
+    heaight2col = int(heaight2)
+    widthPrisecol = int(widthPrise)
+    heaighPrisecol = int(heaightPrise)
+    
+    if player1.bottom==player2.bottom:
+        collisions()
+    if player1.bottom==prise.bottom:
+        collections1()
+    if player2.bottom==prise.bottom:
+        collections2()
+    
+    if width1col == widthPrisecol:
+        if heaighPrisecol == heaight1col:
+            print("wtf")
+            collections1()
+    if width2col == widthPrisecol:
+        if heaighPrisecol == heaight2col:
+            collections2()
+    if width1col == width2col:
+        if heaight1col == heaight2col:
+            collisions()
+    
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
 
-    pygame.draw.circle(screen,"yellow",prise_pos,10)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -102,9 +149,16 @@ while running:
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
     
-    player2 = pygame.Rect(player2_pos.x,player2_pos.y,blueMase,blueMase)
-    player1= pygame.Rect(player_pos.x-redMase,player_pos.y,redMase,redMase)
-    prise = pygame.Rect(10,10,10,10)
+    width1 = player_pos.x-redMase/2
+    width2 = player2_pos.x-blueMase/2
+    heaight1 = player_pos.y+redMase/2
+    heaight2 = player2_pos.y+blueMase/2
+    widthPrise = prise_pos.x+5
+    heaightPrise = prise_pos.y+5
+    
+    player2 = pygame.Rect(width1,heaight1,blueMase,blueMase)
+    player1= pygame.Rect(width2,heaight2,redMase,redMase)
+    prise = pygame.Rect(widthPrise,heaightPrise,10,10)
 
     pygame.draw.circle(screen,"yellow",prise_pos,10)
     
@@ -128,23 +182,29 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
         player_pos.y -= 300 * dt
+        UpdatePositions()
     if keys[pygame.K_DOWN]:
         player_pos.y += 300 * dt
+        UpdatePositions()
     if keys[pygame.K_LEFT]:
         player_pos.x -= 300 * dt
+        UpdatePositions()
     if keys[pygame.K_RIGHT]:
         player_pos.x += 300 * dt
-        
-        
+        UpdatePositions()
     
     if keys[pygame.K_w]:
         player2_pos.y -= 300 * dt
+        UpdatePositions()
     if keys[pygame.K_s]:
         player2_pos.y += 300 * dt
+        UpdatePositions()
     if keys[pygame.K_a]:
         player2_pos.x -= 300 * dt
+        UpdatePositions()
     if keys[pygame.K_d]:
         player2_pos.x += 300 * dt
+        UpdatePositions()
     
     if player_pos.x > 1280:
         running = False
@@ -168,13 +228,7 @@ while running:
     if player2_pos.y <0:
         running = False
         
-    if prise.collidepoint(player1):
-        collections1()
-        ReplacePries()
-    elif prise.collidepoint(player2):
-        collections2()
-        ReplacePries()
-        
+
     score_text = font.render(f'Score red: {Redscore}',True,(255,255,255))
     screen.blit(score_text, (10, 10))
     
@@ -184,6 +238,8 @@ while running:
     # flip() the display to put your work on screen
     player2 = pygame.Rect(blueMase,blueMase,blueMase,blueMase)
     player1= pygame.Rect(redMase,redMase,redMase,redMase)
+    if keys[pygame.K_ESCAPE]:
+        pygame.quit()
 
     pygame.display.flip()
 

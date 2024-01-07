@@ -39,9 +39,12 @@ prise_pos=pygame.Vector2(priseX,priseY)
 
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-player2_pos = pygame.Vector2(screen.get_width()/2+156,screen.get_height()/2+123)
+player2_pos = pygame.Vector2(screen.get_width()/2,screen.get_height()/2+123)
 
-
+player1X = screen.get_width()/2
+player1Y = screen.get_height()/2
+player2X = screen.get_width()/2+156
+player2Y = screen.get_width()/2 +123
 def collisions():
     global running
     if redMase > blueMase:
@@ -94,53 +97,31 @@ def GameOver():
 
 test = 0
 def UpdatePositions():
-    global player1
-    global player2
-    global player_pos
-    global player2_pos
-    global prise_pos
-    global prise
+    global player1X
+    global player1Y
+    global player2Xa
+    global player2Y
+    global priseX
+    global priseY
     
-    width1 = player_pos.x-redMase/2
-    width2 = player2_pos.x-blueMase/2
-    heaight1 = player_pos.y+redMase/2
-    heaight2 = player2_pos.y+blueMase/2
-    widthPrise = prise_pos.x+5
-    heaightPrise = prise_pos.y+5
+    player1X = player_pos.x-redMase/2
+    player2X = player2_pos.x-blueMase/2
+    player1Y = player_pos.y+redMase/2
+    player2Y = player2_pos.y+blueMase/2
+
     
-    player2 = pygame.Rect(width1,heaight1,blueMase,blueMase)
-    player1= pygame.Rect(width2,heaight2,redMase,redMase)
-    prise = pygame.Rect(widthPrise,heaightPrise,10,10)
-    
-    width1col = int(width1)
-    width2col = int(width2)
-    heaight1col = int(heaight1)
-    heaight2col = int(heaight2)
-    widthPrisecol = int(widthPrise)
-    heaighPrisecol = int(heaightPrise)
-    
-    if player1.bottom==player2.bottom:
-        collisions()
-    if player1.bottom==prise.bottom:
+    if player1X == priseX and player1Y == priseY:
         collections1()
-    if player2.bottom==prise.bottom:
+    if player2X == priseX and player2Y == priseY:
         collections2()
+    if player1X == player2X and player1Y == player2Y:
+        collisions()
     
-    if width1col == widthPrisecol:
-        if heaighPrisecol == heaight1col:
-            print("wtf")
-            collections1()
-    if width2col == widthPrisecol:
-        if heaighPrisecol == heaight2col:
-            collections2()
-    if width1col == width2col:
-        if heaight1col == heaight2col:
-            collisions()
     
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
-
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -182,28 +163,36 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
         player_pos.y -= 300 * dt
+        player1Y -= 300 * dt
         UpdatePositions()
     if keys[pygame.K_DOWN]:
         player_pos.y += 300 * dt
+        player1Y += 300 * dt
         UpdatePositions()
     if keys[pygame.K_LEFT]:
         player_pos.x -= 300 * dt
+        player1X -= 300 * dt
         UpdatePositions()
     if keys[pygame.K_RIGHT]:
         player_pos.x += 300 * dt
+        player1X += 300 * dt
         UpdatePositions()
     
     if keys[pygame.K_w]:
         player2_pos.y -= 300 * dt
+        player2Y -= 300 * dt
         UpdatePositions()
     if keys[pygame.K_s]:
         player2_pos.y += 300 * dt
+        player2Y += 300 * dt
         UpdatePositions()
     if keys[pygame.K_a]:
         player2_pos.x -= 300 * dt
+        player2X -= 300 * dt
         UpdatePositions()
     if keys[pygame.K_d]:
         player2_pos.x += 300 * dt
+        player2X += 300 * dt
         UpdatePositions()
     
     if player_pos.x > 1280:

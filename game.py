@@ -1,4 +1,3 @@
-# Example file showing a circle moving on screen
 import pygame
 import sys
 import os
@@ -45,6 +44,7 @@ player1X = screen.get_width()/2
 player1Y = screen.get_height()/2
 player2X = screen.get_width()/2+156
 player2Y = screen.get_width()/2 +123
+rects = [player1,player2,prise]
 def collisions():
     global running
     if redMase > blueMase:
@@ -97,24 +97,21 @@ def GameOver():
 
 test = 0
 def UpdatePositions():
-    global player1X
-    global player1Y
-    global player2Xa
-    global player2Y
-    global priseX
-    global priseY
+    global prise
+    global player1
+    global player2
     
-    player1X = player_pos.x-redMase/2
-    player2X = player2_pos.x-blueMase/2
-    player1Y = player_pos.y+redMase/2
-    player2Y = player2_pos.y+blueMase/2
-
+    player2.update(player2_pos.x,player2_pos.y,blueMase,blueMase)
+    player1.update(player_pos.x,player_pos.y,redMase,redMase)
+    prise.update(prise_pos.x,prise_pos.y,10,10)
     
-    if player1X == priseX and player1Y == priseY:
+    if player1.collidepoint(prise_pos.x,prise_pos.y):
         collections1()
-    if player2X == priseX and player2Y == priseY:
+        ReplacePries()
+    if player2.collidepoint(prise_pos.x,prise_pos.y):
         collections2()
-    if player1X == player2X and player1Y == player2Y:
+        ReplacePries()
+    if player1.collidepoint(player2_pos.x,player2_pos.y):
         collisions()
     
     
